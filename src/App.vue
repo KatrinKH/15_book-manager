@@ -115,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import BookCard from './components/BookCard.vue'
 import AddBookModal from './components/AddBookModal.vue'
 
@@ -185,9 +185,9 @@ const loadBooks = () => {
 
 const books = ref(loadBooks())
 
-watch(books, (val) => {
-  localStorage.setItem('bookshelf', JSON.stringify(val))
-}, { deep: true })
+const save = () => {
+  localStorage.setItem('bookshelf', JSON.stringify(books.value))
+}
 
 const readCount = computed(() => books.value.filter(b => b.read).length)
 const avgRating = computed(() => {
@@ -229,24 +229,26 @@ const addBook = (data) => {
     read: false,
     ...data,
   })
+  save()
 }
 
 const toggleRead = (id) => {
   const b = books.value.find(b => b.id === id)
-  if (b) b.read = !b.read
+  if (b) { b.read = !b.read; save() }
 }
 
 const deleteBook = (id) => {
   books.value = books.value.filter(b => b.id !== id)
+  save()
 }
 
 const updateRating = (id, rating) => {
   const b = books.value.find(b => b.id === id)
-  if (b) b.rating = rating
+  if (b) { b.rating = rating; save() }
 }
 
 const updateCover = (id, cover) => {
   const b = books.value.find(b => b.id === id)
-  if (b) b.cover = cover
+  if (b) { b.cover = cover; save() }
 }
 </script>
