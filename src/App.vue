@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Header -->
     <header class="app-header">
       <div class="container">
         <h1 class="app-title">Моя библиотека</h1>
@@ -7,6 +8,7 @@
       </div>
     </header>
 
+    <!-- Stats bar -->
     <div class="stats-bar">
       <div class="container d-flex align-items-center flex-wrap gap-2">
         <div class="stat-item">
@@ -28,7 +30,7 @@
           <span class="stat-number">{{ avgRating }}</span>
           <span class="stat-label">средняя оценка</span>
         </div>
-
+        <!-- Search -->
         <div class="ms-auto">
           <div class="search-wrap">
             <span class="search-icon">🔍</span>
@@ -42,6 +44,7 @@
       </div>
     </div>
 
+    <!-- Filter tabs -->
     <div class="filter-tabs">
       <div class="container d-flex">
         <button
@@ -54,6 +57,7 @@
       </div>
     </div>
 
+    <!-- Sort controls -->
     <div class="sort-controls">
       <div class="container d-flex align-items-center gap-2 flex-wrap">
         <span class="sort-label">Сортировка:</span>
@@ -67,6 +71,7 @@
       </div>
     </div>
 
+    <!-- Books grid -->
     <main class="container py-4">
       <div v-if="filteredBooks.length === 0" class="empty-state">
         <div class="empty-icon">📚</div>
@@ -97,8 +102,10 @@
       </div>
     </main>
 
+    <!-- FAB -->
     <button class="fab-add" @click="showModal = true" title="Добавить книгу">+</button>
 
+    <!-- Modal -->
     <AddBookModal
       v-if="showModal"
       @close="showModal = false"
@@ -108,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import BookCard from './components/BookCard.vue'
 import AddBookModal from './components/AddBookModal.vue'
 
@@ -131,7 +138,7 @@ const sortOptions = [
   { label: 'Оценка', value: 'rating' },
 ]
 
-const books = ref([
+const DEFAULT_BOOKS = [
   {
     id: 1,
     title: 'Мастер и Маргарита',
@@ -165,7 +172,22 @@ const books = ref([
     cover: null,
     addedAt: Date.now() - 86400000 * 1,
   },
-])
+]
+
+const loadBooks = () => {
+  try {
+    const saved = localStorage.getItem('bookshelf')
+    return saved ? JSON.parse(saved) : DEFAULT_BOOKS
+  } catch {
+    return DEFAULT_BOOKS
+  }
+}
+
+const books = ref(loadBooks())
+
+watch(books, (val) => {
+  localStorage.setItem('bookshelf', JSON.stringify(val))
+}, { deep: true })
 
 const readCount = computed(() => books.value.filter(b => b.read).length)
 const avgRating = computed(() => {
@@ -177,19 +199,19 @@ const avgRating = computed(() => {
 const filteredBooks = computed(() => {
   let list = [...books.value]
 
-  // Поиск
+  // Search
   const q = searchQuery.value.toLowerCase().trim()
   if (q) list = list.filter(b =>
     b.title.toLowerCase().includes(q) ||
     (b.author && b.author.toLowerCase().includes(q))
   )
 
-  // Фильтр
+  // Filter
   if (activeFilter.value === 'read') list = list.filter(b => b.read)
   if (activeFilter.value === 'unread') list = list.filter(b => !b.read)
   if (activeFilter.value === 'rated') list = list.filter(b => b.rating > 0)
 
-  // Сортировка
+  // Sort
   list.sort((a, b) => {
     if (sortBy.value === 'title') return a.title.localeCompare(b.title)
     if (sortBy.value === 'author') return (a.author || '').localeCompare(b.author || '')
