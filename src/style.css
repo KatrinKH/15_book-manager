@@ -1,0 +1,534 @@
+:root {
+  --cream: #f7f4ef;
+  --parchment: #ede8df;
+  --ink: #1a1714;
+  --ink-light: #4a4540;
+  --ink-muted: #8a8078;
+  --terracotta: #c4693a;
+  --terracotta-light: #e8896a;
+  --sage: #7a9e7e;
+  --gold: #c9a84c;
+  --border: #d8d0c4;
+  --card-bg: #ffffff;
+  --shadow-soft: 0 2px 20px rgba(26, 23, 20, 0.07);
+  --shadow-card: 0 4px 30px rgba(26, 23, 20, 0.10);
+}
+
+/* Общая настройка размеров */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Базовые стили тела */
+body {
+  background-color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* Типографика */
+.font-display {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Стили полосы прокрутки */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--parchment); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
+
+/* Хедер приложения */
+.app-header {
+  background: var(--ink);
+  padding: 2.5rem 0 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--terracotta), var(--gold), var(--sage));
+}
+.app-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: var(--cream);
+  margin: 0;
+  line-height: 1;
+}
+.app-subtitle {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 0.4rem;
+  font-weight: 300;
+}
+
+/* Панель статистики */
+.stats-bar {
+  background: var(--parchment);
+  border-bottom: 1px solid var(--border);
+  padding: 0.85rem 0;
+}
+.stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.stat-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+.stat-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--border);
+  margin: 0 1rem;
+}
+
+/* Вкладки фильтров */
+.filter-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+}
+.filter-tab {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  border: none;
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.filter-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 2px;
+  background: var(--terracotta);
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+.filter-tab:hover { color: var(--ink); }
+.filter-tab.active { color: var(--ink); }
+.filter-tab.active::after { transform: scaleX(1); }
+
+/* Управление сортировкой */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.sort-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+.sort-btn {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--ink-light);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  letter-spacing: 0.05em;
+  font-family: 'DM Sans', sans-serif;
+}
+.sort-btn:hover { border-color: var(--ink-muted); color: var(--ink); }
+.sort-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+/* Карточки книг */
+.book-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.35s ease both;
+}
+.book-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.book-card.read {
+  border-left: 3px solid var(--sage);
+}
+
+/* Обложка книги */
+.book-cover-wrap {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: var(--parchment);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.book-cover-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+.book-card:hover .book-cover-img { transform: scale(1.03); }
+.book-cover-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--parchment) 0%, #e0d9cf 100%);
+}
+.cover-icon { font-size: 2.5rem; opacity: 0.35; }
+.cover-upload-hint {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.book-cover-wrap:hover .cover-upload-hint { opacity: 1; }
+.cover-input { display: none; }
+
+/* Значок "Прочитано" */
+.read-badge {
+  position: absolute;
+  top: 0.6rem; right: 0.6rem;
+  background: var(--sage);
+  color: white;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+/* Тело карточки */
+.book-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.book-genre {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--terracotta);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+.book-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+  margin-bottom: 0.25rem;
+}
+.book-author {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  margin-bottom: 0.6rem;
+  font-style: italic;
+}
+.book-description {
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  line-height: 1.55;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+/* Рейтинг звёзд */
+.star-rating {
+  display: flex;
+  gap: 0.15rem;
+  margin-bottom: 0.75rem;
+}
+.star {
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+  color: #d8d0c4;
+  line-height: 1;
+}
+.star.filled { color: var(--gold); }
+.star:hover { transform: scale(1.2); }
+
+/* Действия на карточке */
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  margin-top: auto;
+}
+.btn-read-toggle {
+  flex: 1;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--ink-light);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-read-toggle:hover { background: var(--parchment); }
+.btn-read-toggle.read {
+  background: var(--sage);
+  border-color: var(--sage);
+  color: white;
+}
+.btn-delete {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: all 0.15s;
+}
+.btn-delete:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* Модальное окно добавления книги */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 23, 20, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-box {
+  background: var(--card-bg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: var(--ink); }
+.modal-body { padding: 1.5rem; }
+
+/* Загрузка обложки в модальном окне */
+.cover-upload-area {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 1.5px dashed var(--border);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.cover-upload-area:hover {
+  border-color: var(--ink-muted);
+  background: var(--parchment);
+}
+.cover-upload-area img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cover-upload-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.cover-upload-icon { font-size: 1.8rem; margin-bottom: 0.4rem; opacity: 0.5; }
+
+/* Стили форм */
+.form-label-custom {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 400;
+}
+.form-control-custom {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.form-control-custom:focus { border-color: var(--ink-muted); background: white; }
+.form-control-custom::placeholder { color: var(--ink-muted); opacity: 0.6; }
+textarea.form-control-custom { resize: vertical; min-height: 80px; }
+.form-select-custom {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8078'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  padding-right: 2rem;
+}
+
+/* Плавающая кнопка добавления книги */
+.fab-add {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(26, 23, 20, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.fab-add:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(26, 23, 20, 0.45);
+}
+
+/* Состояние пустой библиотеки */
+.empty-state {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--ink-muted);
+}
+.empty-icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.35; }
+.empty-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--ink-light);
+  margin-bottom: 0.5rem;
+}
+.empty-text { font-size: 0.85rem; }
+
+/* Кнопка отправки формы */
+.btn-submit {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  transition: background 0.15s;
+  margin-top: 1.25rem;
+}
